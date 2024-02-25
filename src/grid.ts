@@ -99,7 +99,7 @@ class Grid {
 
 			const checkConnections = (direction: Direction) => {
 				// get the neighbour cell
-				const neighbour = this.getneighbour(cell, direction);
+				const neighbour = this.getNeighbour(cell, direction);
 				if (!neighbour) return;
 
 				// get all the possible connections the neighbour can have
@@ -125,7 +125,7 @@ class Grid {
 	 * @param direction The direction of the neighbour
 	 * @returns The neighbour cell, or null if the neighbour is out of bounds
 	 */
-	private getneighbour(cell: Cell, direction: Direction): Cell | null {
+	private getNeighbour(cell: Cell, direction: Direction): Cell | null {
 		switch (direction) {
 			case 'up':
 				return this.getCell(cell.row - 1, cell.column);

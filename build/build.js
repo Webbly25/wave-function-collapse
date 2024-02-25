@@ -89,7 +89,7 @@ class Grid {
                 return cell;
             let options = Tile.allTiles();
             const checkConnections = (direction) => {
-                const neighbour = this.getneighbour(cell, direction);
+                const neighbour = this.getNeighbour(cell, direction);
                 if (!neighbour)
                     return;
                 const connections = neighbour.options.map(tile => tile.connection[this.oppositeDirection(direction)]);
@@ -103,7 +103,7 @@ class Grid {
         });
         this.cells = nextGrid;
     }
-    getneighbour(cell, direction) {
+    getNeighbour(cell, direction) {
         switch (direction) {
             case 'up':
                 return this.getCell(cell.row - 1, cell.column);
