@@ -32,7 +32,7 @@ class Cell {
 }
 class Grid {
     static instance;
-    dimensions = 20;
+    dimensions = 40;
     cells = [];
     cellWidth = 1;
     cellHeight = 1;
@@ -157,7 +157,7 @@ function preload() {
 }
 function setup() {
     console.log('🚀 - Setup initialized - P5 is running');
-    createCanvas(400, 400);
+    createCanvas(800, 800);
     grid = Grid.getInstance();
     grid.setCanvasSize(width, height);
     tileset.setup();

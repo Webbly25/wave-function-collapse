@@ -1,7 +1,7 @@
 class Grid {
 	private static instance: Grid;
 
-	readonly dimensions: number = 20;
+	readonly dimensions: number = 40;
 	cells: Cell[] = [];
 
 	private cellWidth: number = 1;

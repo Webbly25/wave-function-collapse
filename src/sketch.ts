@@ -11,7 +11,7 @@ function preload() {
 
 function setup() {
 	console.log('🚀 - Setup initialized - P5 is running');
-	createCanvas(400, 400);
+	createCanvas(800, 800);
 	grid = Grid.getInstance();
 	grid.setCanvasSize(width, height);
 
