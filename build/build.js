@@ -1,58 +1,64 @@
 "use strict";
-var Cell = (function () {
-    function Cell(row, column) {
-        this.collapsed = false;
-        this.options = [TileType.Blank, TileType.Up, TileType.Right, TileType.Down, TileType.Left];
+class Cell {
+    row;
+    column;
+    collapsed = false;
+    options = [];
+    constructor(row, column, options = Tile.allTiles()) {
         this.row = row;
         this.column = column;
-        this.images = TileImages.getInstance();
+        this.options = options;
     }
-    Cell.prototype.draw = function (width, height) {
+    get tile() {
+        if (!this.collapsed)
+            return null;
+        return this.options[0];
+    }
+    draw(width, height) {
         if (!this.collapsed) {
             fill(0);
             stroke(255);
             rect(this.column * width, this.row * height, width, height);
             return;
         }
-        var option = this.options[0];
-        image(this.images.getImage(option), this.column * width, this.row * height, width, height);
-    };
-    Cell.prototype.collapse = function () {
+        const tile = this.options[0];
+        image(tile.image, this.column * width, this.row * height, width, height);
+    }
+    collapse() {
         this.collapsed = true;
         this.options = [random(this.options)];
-    };
-    return Cell;
-}());
-var Grid = (function () {
-    function Grid() {
-        this.dimensions = 2;
-        this.cells = [];
-        this.cellWidth = 1;
-        this.cellHeight = 1;
-        for (var row = 0; row < this.dimensions; row++) {
-            for (var column = 0; column < this.dimensions; column++) {
-                this.cells.push(new Cell(row, column));
-            }
-        }
     }
-    Grid.getInstance = function () {
+}
+class Grid {
+    static instance;
+    dimensions = 20;
+    cells = [];
+    cellWidth = 1;
+    cellHeight = 1;
+    static getInstance() {
         if (!Grid.instance) {
             Grid.instance = new Grid();
         }
         return Grid.instance;
-    };
-    Grid.prototype.setCanvasSize = function (width, height) {
+    }
+    constructor() {
+        for (let row = 0; row < this.dimensions; row++) {
+            for (let column = 0; column < this.dimensions; column++) {
+                this.cells.push(new Cell(row, column));
+            }
+        }
+    }
+    setCanvasSize(width, height) {
         this.cellWidth = Math.floor(width / this.dimensions);
         this.cellHeight = Math.floor(height / this.dimensions);
-    };
-    Grid.prototype.draw = function () {
-        var _this = this;
-        this.cells.forEach(function (cell) { return cell.draw(_this.cellWidth, _this.cellHeight); });
-    };
-    Grid.prototype.pickCell = function () {
-        var currentEntropy = null;
-        var possibleCells = [];
-        this.cells.forEach(function (cell) {
+    }
+    draw() {
+        this.cells.forEach(cell => cell.draw(this.cellWidth, this.cellHeight));
+    }
+    pickCell() {
+        let currentEntropy = null;
+        let possibleCells = [];
+        this.cells.forEach(cell => {
             if (cell.collapsed)
                 return;
             if (currentEntropy === null || cell.options.length < currentEntropy) {
@@ -69,50 +75,110 @@ var Grid = (function () {
             return null;
         }
         return random(possibleCells);
-    };
-    return Grid;
-}());
-var grid;
+    }
+    getCell(row, column) {
+        if (row < 0 || row > this.dimensions - 1)
+            return null;
+        if (column < 0 || column > this.dimensions - 1)
+            return null;
+        return this.cells[column + row * this.dimensions];
+    }
+    updateOptions() {
+        const nextGrid = this.cells.map(cell => {
+            if (cell.collapsed)
+                return cell;
+            let options = Tile.allTiles();
+            const checkConnections = (direction) => {
+                const neighbour = this.getneighbour(cell, direction);
+                if (!neighbour)
+                    return;
+                const connections = neighbour.options.map(tile => tile.connection[this.oppositeDirection(direction)]);
+                options = options.filter(tile => connections.includes(tile.connection[direction]));
+            };
+            checkConnections('up');
+            checkConnections('down');
+            checkConnections('left');
+            checkConnections('right');
+            return new Cell(cell.row, cell.column, options);
+        });
+        this.cells = nextGrid;
+    }
+    getneighbour(cell, direction) {
+        switch (direction) {
+            case 'up':
+                return this.getCell(cell.row - 1, cell.column);
+            case 'down':
+                return this.getCell(cell.row + 1, cell.column);
+            case 'left':
+                return this.getCell(cell.row, cell.column - 1);
+            case 'right':
+                return this.getCell(cell.row, cell.column + 1);
+        }
+    }
+    oppositeDirection(direction) {
+        switch (direction) {
+            case 'up':
+                return 'down';
+            case 'down':
+                return 'up';
+            case 'left':
+                return 'right';
+            case 'right':
+                return 'left';
+        }
+    }
+}
+let grid;
 function preload() {
-    TileImages.getInstance();
+    new Tile(TileType.Blank, 'tiles/blank.png', {
+        up: 'a',
+        down: 'a',
+        left: 'a',
+        right: 'a'
+    });
+    new Tile(TileType.Up, 'tiles/up.png', {
+        up: 'b',
+        down: 'a',
+        left: 'b',
+        right: 'b'
+    });
+    new Tile(TileType.Right, 'tiles/right.png', {
+        up: 'b',
+        down: 'b',
+        left: 'a',
+        right: 'b'
+    });
+    new Tile(TileType.Down, 'tiles/down.png', {
+        up: 'a',
+        down: 'b',
+        left: 'b',
+        right: 'b'
+    });
+    new Tile(TileType.Left, 'tiles/left.png', {
+        up: 'b',
+        down: 'b',
+        left: 'b',
+        right: 'a'
+    });
 }
 function setup() {
-    frameRate(1);
     console.log('🚀 - Setup initialized - P5 is running');
     createCanvas(400, 400);
     grid = Grid.getInstance();
     grid.setCanvasSize(width, height);
 }
 function draw() {
-    background(51);
-    var cell = grid.pickCell();
-    if (cell)
+    const cell = grid.pickCell();
+    if (cell) {
         cell.collapse();
-    grid.draw();
-    noLoop();
-}
-var TileImages = (function () {
-    function TileImages() {
-        var _a;
-        this.images = (_a = {},
-            _a[TileType.Blank] = loadImage('tiles/blank.png'),
-            _a[TileType.Up] = loadImage('tiles/up.png'),
-            _a[TileType.Right] = loadImage('tiles/right.png'),
-            _a[TileType.Down] = loadImage('tiles/down.png'),
-            _a[TileType.Left] = loadImage('tiles/left.png'),
-            _a);
+        grid.updateOptions();
     }
-    TileImages.getInstance = function () {
-        if (!TileImages.instance) {
-            TileImages.instance = new TileImages();
-        }
-        return TileImages.instance;
-    };
-    TileImages.prototype.getImage = function (type) {
-        return this.images[type];
-    };
-    return TileImages;
-}());
+    else {
+        noLoop();
+    }
+    background(51);
+    grid.draw();
+}
 var TileType;
 (function (TileType) {
     TileType[TileType["Blank"] = 0] = "Blank";
@@ -121,4 +187,25 @@ var TileType;
     TileType[TileType["Down"] = 3] = "Down";
     TileType[TileType["Left"] = 4] = "Left";
 })(TileType || (TileType = {}));
+class Tile {
+    static Tiles = {};
+    static getTile(tileType) {
+        const tile = Tile.Tiles[tileType];
+        if (tile)
+            return tile;
+        throw new Error(`Tile not found: ${tileType}`);
+    }
+    static allTiles() {
+        return Object.values(Tile.Tiles);
+    }
+    type;
+    image;
+    connection;
+    constructor(type, imagePath, connection) {
+        this.type = type;
+        this.image = loadImage(imagePath);
+        this.connection = connection;
+        Tile.Tiles[type] = this;
+    }
+}
 //# sourceMappingURL=build.js.map

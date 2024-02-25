@@ -1,8 +1,8 @@
 class Grid {
 	private static instance: Grid;
 
-	readonly dimensions: number = 2;
-	readonly cells: Cell[] = [];
+	readonly dimensions: number = 20;
+	cells: Cell[] = [];
 
 	private cellWidth: number = 1;
 	private cellHeight: number = 1;
@@ -72,5 +72,87 @@ class Grid {
 		}
 
 		return random(possibleCells);
+	}
+
+	/**
+	 * Get a cell by its row and column
+	 * @param row The row of the cell
+	 * @param column The column of the cell
+	 * @returns The cell, or null if the coordinates are out of bounds
+	 */
+	getCell(row: number, column: number): Cell | null {
+		if (row < 0 || row > this.dimensions - 1) return null;
+		if (column < 0 || column > this.dimensions - 1) return null;
+
+		return this.cells[column + row * this.dimensions];
+	}
+
+	/**
+	 * Update the options available to each cell
+	 */
+	updateOptions(): void {
+		const nextGrid: Cell[] = this.cells.map(cell => {
+			// keep the collapsed cell as is
+			if (cell.collapsed) return cell;
+
+			let options = Tile.allTiles();
+
+			const checkConnections = (direction: Direction) => {
+				// get the neighbour cell
+				const neighbour = this.getneighbour(cell, direction);
+				if (!neighbour) return;
+
+				// get all the possible connections the neighbour can have
+				const connections = neighbour.options.map(tile => tile.connection[this.oppositeDirection(direction)]);
+				// filter the options to keep only the ones that have a connection with the neighbour
+				options = options.filter(tile => connections.includes(tile.connection[direction]));
+			};
+
+			checkConnections('up');
+			checkConnections('down');
+			checkConnections('left');
+			checkConnections('right');
+
+			return new Cell(cell.row, cell.column, options);
+		});
+
+		this.cells = nextGrid;
+	}
+
+	/**
+	 * Get a neighbour cell
+	 * @param cell The cell to get the neighbour of
+	 * @param direction The direction of the neighbour
+	 * @returns The neighbour cell, or null if the neighbour is out of bounds
+	 */
+	private getneighbour(cell: Cell, direction: Direction): Cell | null {
+		switch (direction) {
+			case 'up':
+				return this.getCell(cell.row - 1, cell.column);
+			case 'down':
+				return this.getCell(cell.row + 1, cell.column);
+			case 'left':
+				return this.getCell(cell.row, cell.column - 1);
+			case 'right':
+				return this.getCell(cell.row, cell.column + 1);
+		}
+	}
+
+	/**
+	 * Get the opposite direction
+	 * @param direction The direction to get the opposite of
+	 * @returns The opposite direction
+	 */
+	private oppositeDirection(direction: Direction): Direction {
+		switch (direction) {
+			case 'up':
+				return 'down';
+			case 'down':
+				return 'up';
+			case 'left':
+				return 'right';
+			case 'right':
+				return 'left';
+		}
 	}
 }

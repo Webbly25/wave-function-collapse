@@ -3,15 +3,17 @@ class Cell {
 	column: number;
 
 	collapsed: boolean = false;
-	options: TileType[] = [TileType.Blank, TileType.Up, TileType.Right, TileType.Down, TileType.Left];
+	options: Tile[] = [];
 
-	readonly images: TileImages;
-
-	constructor(row: number, column: number) {
+	constructor(row: number, column: number, options: Tile[] = Tile.allTiles()) {
 		this.row = row;
 		this.column = column;
+		this.options = options;
+	}
 
-		this.images = TileImages.getInstance();
+	get tile(): Tile | null {
+		if (!this.collapsed) return null;
+		return this.options[0];
 	}
 
 	/**
@@ -28,8 +30,8 @@ class Cell {
 		}
 
 		// when the cell is collapsed, there will be only one option
-		const option = this.options[0];
-		image(this.images.getImage(option), this.column * width, this.row * height, width, height);
+		const tile = this.options[0];
+		image(tile.image, this.column * width, this.row * height, width, height);
 	}
 
 	/**
