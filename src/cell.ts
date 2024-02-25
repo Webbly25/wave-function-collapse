@@ -5,7 +5,7 @@ class Cell {
 	collapsed: boolean = false;
 	options: Tile[] = [];
 
-	constructor(row: number, column: number, options: Tile[] = Tile.allTiles()) {
+	constructor(row: number, column: number, options: Tile[] = Tile.Tiles) {
 		this.row = row;
 		this.column = column;
 		this.options = options;

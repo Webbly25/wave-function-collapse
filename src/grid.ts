@@ -109,7 +109,7 @@ class Grid {
 				continue;
 			}
 
-			let options = Tile.allTiles();
+			let options = Tile.Tiles;
 
 			const checkConnections = (direction: Direction) => {
 				// get the neighbour cell

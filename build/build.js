@@ -4,7 +4,7 @@ class Cell {
     column;
     collapsed = false;
     options = [];
-    constructor(row, column, options = Tile.allTiles()) {
+    constructor(row, column, options = Tile.Tiles) {
         this.row = row;
         this.column = column;
         this.options = options;
@@ -95,7 +95,7 @@ class Grid {
                 nextGrid.push(cell);
                 continue;
             }
-            let options = Tile.allTiles();
+            let options = Tile.Tiles;
             const checkConnections = (direction) => {
                 const neighbour = this.getNeighbour(cell, direction);
                 if (!neighbour)
@@ -174,9 +174,6 @@ function draw() {
 }
 class Tile {
     static Tiles = [];
-    static allTiles() {
-        return Object.values(Tile.Tiles);
-    }
     image;
     connection;
     constructor(imagePath, connection) {

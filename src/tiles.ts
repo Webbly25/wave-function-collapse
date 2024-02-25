@@ -4,14 +4,6 @@ type Connection = Record<Direction, string>;
 class Tile {
 	static Tiles: Tile[] = [];
 
-	/**
-	 * Get all the tiles
-	 * @returns All the tiles
-	 */
-	static allTiles(): Tile[] {
-		return Object.values(Tile.Tiles) as Tile[];
-	}
-
 	readonly image: p5.Image;
 	readonly connection: Connection;
 
