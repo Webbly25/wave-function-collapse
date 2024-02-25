@@ -17,10 +17,8 @@ function setup() {
 function draw() {
 	background(51);
 
-	const tile = grid.pickTile();
-	if (tile) {
-		tile.collapse();
-	}
+	const cell = grid.pickCell();
+	if (cell) cell.collapse();
 
 	grid.draw();
 

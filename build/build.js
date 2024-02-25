@@ -1,13 +1,37 @@
 "use strict";
+var Cell = (function () {
+    function Cell(row, column) {
+        this.collapsed = false;
+        this.options = [TileType.Blank, TileType.Up, TileType.Right, TileType.Down, TileType.Left];
+        this.row = row;
+        this.column = column;
+        this.images = TileImages.getInstance();
+    }
+    Cell.prototype.draw = function (width, height) {
+        if (!this.collapsed) {
+            fill(0);
+            stroke(255);
+            rect(this.column * width, this.row * height, width, height);
+            return;
+        }
+        var option = this.options[0];
+        image(this.images.getImage(option), this.column * width, this.row * height, width, height);
+    };
+    Cell.prototype.collapse = function () {
+        this.collapsed = true;
+        this.options = [random(this.options)];
+    };
+    return Cell;
+}());
 var Grid = (function () {
     function Grid() {
         this.dimensions = 2;
-        this.tiles = [];
-        this.tileWidth = 1;
-        this.tileHeight = 1;
+        this.cells = [];
+        this.cellWidth = 1;
+        this.cellHeight = 1;
         for (var row = 0; row < this.dimensions; row++) {
             for (var column = 0; column < this.dimensions; column++) {
-                this.tiles.push(new Tile(row, column));
+                this.cells.push(new Cell(row, column));
             }
         }
     }
@@ -18,33 +42,33 @@ var Grid = (function () {
         return Grid.instance;
     };
     Grid.prototype.setCanvasSize = function (width, height) {
-        this.tileWidth = Math.floor(width / this.dimensions);
-        this.tileHeight = Math.floor(height / this.dimensions);
+        this.cellWidth = Math.floor(width / this.dimensions);
+        this.cellHeight = Math.floor(height / this.dimensions);
     };
     Grid.prototype.draw = function () {
         var _this = this;
-        this.tiles.forEach(function (tile) { return tile.draw(_this.tileWidth, _this.tileHeight); });
+        this.cells.forEach(function (cell) { return cell.draw(_this.cellWidth, _this.cellHeight); });
     };
-    Grid.prototype.pickTile = function () {
+    Grid.prototype.pickCell = function () {
         var currentEntropy = null;
-        var possibleTiles = [];
-        this.tiles.forEach(function (tile) {
-            if (tile.collapsed)
+        var possibleCells = [];
+        this.cells.forEach(function (cell) {
+            if (cell.collapsed)
                 return;
-            if (currentEntropy === null || tile.options.length < currentEntropy) {
-                currentEntropy = tile.options.length;
-                possibleTiles = [tile];
+            if (currentEntropy === null || cell.options.length < currentEntropy) {
+                currentEntropy = cell.options.length;
+                possibleCells = [cell];
                 return;
             }
-            if (tile.options.length === currentEntropy) {
-                possibleTiles.push(tile);
+            if (cell.options.length === currentEntropy) {
+                possibleCells.push(cell);
                 return;
             }
         });
-        if (possibleTiles.length === 0) {
+        if (possibleCells.length === 0) {
             return null;
         }
-        return random(possibleTiles);
+        return random(possibleCells);
     };
     return Grid;
 }());
@@ -61,10 +85,9 @@ function setup() {
 }
 function draw() {
     background(51);
-    var tile = grid.pickTile();
-    if (tile) {
-        tile.collapse();
-    }
+    var cell = grid.pickCell();
+    if (cell)
+        cell.collapse();
     grid.draw();
     noLoop();
 }
@@ -98,28 +121,4 @@ var TileType;
     TileType[TileType["Down"] = 3] = "Down";
     TileType[TileType["Left"] = 4] = "Left";
 })(TileType || (TileType = {}));
-var Tile = (function () {
-    function Tile(row, column) {
-        this.collapsed = false;
-        this.options = [TileType.Blank, TileType.Up, TileType.Right, TileType.Down, TileType.Left];
-        this.row = row;
-        this.column = column;
-        this.images = TileImages.getInstance();
-    }
-    Tile.prototype.draw = function (width, height) {
-        if (!this.collapsed) {
-            fill(0);
-            stroke(255);
-            rect(this.column * width, this.row * height, width, height);
-            return;
-        }
-        var option = this.options[0];
-        image(this.images.getImage(option), this.column * width, this.row * height, width, height);
-    };
-    Tile.prototype.collapse = function () {
-        this.collapsed = true;
-        this.options = [random(this.options)];
-    };
-    return Tile;
-}());
 //# sourceMappingURL=build.js.map

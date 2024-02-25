@@ -1,4 +1,4 @@
-class Tile {
+class Cell {
 	row: number;
 	column: number;
 
@@ -15,7 +15,7 @@ class Tile {
 	}
 
 	/**
-	 * Draw this tile
+	 * Draw this cell
 	 * @returns
 	 */
 	draw(width: number, height: number) {
@@ -27,13 +27,13 @@ class Tile {
 			return;
 		}
 
-		// when the tile is collapsed, there will be only one option
+		// when the cell is collapsed, there will be only one option
 		const option = this.options[0];
 		image(this.images.getImage(option), this.column * width, this.row * height, width, height);
 	}
 
 	/**
-	 * Mark the tile as collapsed and pick a random option
+	 * Mark the cell as collapsed and pick a random option
 	 */
 	collapse(): void {
 		this.collapsed = true;
