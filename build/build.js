@@ -130,36 +130,11 @@ class Grid {
 }
 let grid;
 function preload() {
-    new Tile(TileType.Blank, 'tiles/blank.png', {
-        up: 'a',
-        down: 'a',
-        left: 'a',
-        right: 'a'
-    });
-    new Tile(TileType.Up, 'tiles/up.png', {
-        up: 'b',
-        down: 'a',
-        left: 'b',
-        right: 'b'
-    });
-    new Tile(TileType.Right, 'tiles/right.png', {
-        up: 'b',
-        down: 'b',
-        left: 'a',
-        right: 'b'
-    });
-    new Tile(TileType.Down, 'tiles/down.png', {
-        up: 'a',
-        down: 'b',
-        left: 'b',
-        right: 'b'
-    });
-    new Tile(TileType.Left, 'tiles/left.png', {
-        up: 'b',
-        down: 'b',
-        left: 'b',
-        right: 'a'
-    });
+    new Tile('tiles/blank.png', { up: 'a', down: 'a', left: 'a', right: 'a' });
+    new Tile('tiles/up.png', { up: 'b', down: 'a', left: 'b', right: 'b' });
+    new Tile('tiles/right.png', { up: 'b', down: 'b', left: 'a', right: 'b' });
+    new Tile('tiles/down.png', { up: 'a', down: 'b', left: 'b', right: 'b' });
+    new Tile('tiles/left.png', { up: 'b', down: 'b', left: 'b', right: 'a' });
 }
 function setup() {
     console.log('🚀 - Setup initialized - P5 is running');
@@ -179,33 +154,17 @@ function draw() {
     background(51);
     grid.draw();
 }
-var TileType;
-(function (TileType) {
-    TileType[TileType["Blank"] = 0] = "Blank";
-    TileType[TileType["Up"] = 1] = "Up";
-    TileType[TileType["Right"] = 2] = "Right";
-    TileType[TileType["Down"] = 3] = "Down";
-    TileType[TileType["Left"] = 4] = "Left";
-})(TileType || (TileType = {}));
 class Tile {
-    static Tiles = {};
-    static getTile(tileType) {
-        const tile = Tile.Tiles[tileType];
-        if (tile)
-            return tile;
-        throw new Error(`Tile not found: ${tileType}`);
-    }
+    static Tiles = [];
     static allTiles() {
         return Object.values(Tile.Tiles);
     }
-    type;
     image;
     connection;
-    constructor(type, imagePath, connection) {
-        this.type = type;
+    constructor(imagePath, connection) {
         this.image = loadImage(imagePath);
         this.connection = connection;
-        Tile.Tiles[type] = this;
+        Tile.Tiles.push(this);
     }
 }
 //# sourceMappingURL=build.js.map
