@@ -100,7 +100,9 @@ class Grid {
                 const neighbour = this.getNeighbour(cell, direction);
                 if (!neighbour)
                     return;
-                const connections = neighbour.options.map(tile => tile.connections[this.oppositeDirection(direction)]);
+                const connections = neighbour.options
+                    .map(tile => tile.connections[this.oppositeDirection(direction)])
+                    .map(connection => connection.split('').reverse().join(''));
                 options = options.filter(tile => connections.includes(tile.connections[direction]));
             };
             checkConnections('up');
@@ -161,7 +163,7 @@ function setup() {
     tileset.setup();
 }
 function draw() {
-    background(51);
+    background(10);
     grid.draw();
     const cell = grid.pickCell();
     if (cell) {
@@ -183,7 +185,7 @@ class SimpleTileSet {
     }
     static setup() {
         new Tile(this.tiles.blank, { up: 'a', right: 'a', down: 'a', left: 'a' });
-        new Tile(this.tiles.up, { up: 'b', right: 'b', down: 'a', left: 'b' }, 'FOUR');
+        new Tile(this.tiles.up, { up: 'b', right: 'b', down: 'a', left: 'b' }, 4);
     }
 }
 class CircuitTileSet {
@@ -195,40 +197,40 @@ class CircuitTileSet {
         }
     }
     static setup() {
-        new Tile(this.tiles[0], { up: 'a', right: 'a', down: 'a', left: 'a' });
-        new Tile(this.tiles[1], { up: 'b', right: 'b', down: 'b', left: 'b' });
-        new Tile(this.tiles[2], { up: 'b', right: 'c', down: 'b', left: 'b' }, 'FOUR');
-        new Tile(this.tiles[3], { up: 'b', right: 'd', down: 'b', left: 'd' }, 'FOUR');
-        new Tile(this.tiles[4], { up: 'b', right: 'c', down: 'b', left: 'a' }, 'FOUR');
-        new Tile(this.tiles[6], { up: 'b', right: 'c', down: 'b', left: 'c' }, 'TWO');
-        new Tile(this.tiles[7], { up: 'd', right: 'c', down: 'd', left: 'c' }, 'TWO');
-        new Tile(this.tiles[8], { up: 'd', right: 'b', down: 'c', left: 'b' }, 'FOUR');
-        new Tile(this.tiles[9], { up: 'c', right: 'c', down: 'b', left: 'c' }, 'FOUR');
-        new Tile(this.tiles[10], { up: 'c', right: 'c', down: 'c', left: 'c' }, 'FLIP');
-        new Tile(this.tiles[11], { up: 'c', right: 'c', down: 'b', left: 'b' }, 'FOUR');
-        new Tile(this.tiles[12], { up: 'b', right: 'c', down: 'b', left: 'c' }, 'FOUR');
+        new Tile(this.tiles[0], { up: 'aaa', right: 'aaa', down: 'aaa', left: 'aaa' });
+        new Tile(this.tiles[1], { up: 'bbb', right: 'bbb', down: 'bbb', left: 'bbb' });
+        new Tile(this.tiles[2], { up: 'bbb', right: 'bcb', down: 'bbb', left: 'bbb' }, 4);
+        new Tile(this.tiles[3], { up: 'bbb', right: 'bdb', down: 'bbb', left: 'bdb' }, 4);
+        new Tile(this.tiles[4], { up: 'abb', right: 'bcb', down: 'bba', left: 'aaa' }, 4);
+        new Tile(this.tiles[5], { up: 'abb', right: 'bbb', down: 'bbb', left: 'bba' }, 4);
+        new Tile(this.tiles[6], { up: 'bbb', right: 'bcb', down: 'bbb', left: 'bcb' }, 2);
+        new Tile(this.tiles[7], { up: 'bdb', right: 'bcb', down: 'bdb', left: 'bcb' }, 2);
+        new Tile(this.tiles[8], { up: 'bdb', right: 'bbb', down: 'bcb', left: 'bbb' }, 4);
+        new Tile(this.tiles[9], { up: 'bcb', right: 'bcb', down: 'bbb', left: 'bcb' }, 4);
+        new Tile(this.tiles[10], { up: 'bcb', right: 'bcb', down: 'bcb', left: 'bcb' }, 2);
+        new Tile(this.tiles[11], { up: 'bcb', right: 'bcb', down: 'bbb', left: 'bbb' }, 4);
+        new Tile(this.tiles[12], { up: 'bbb', right: 'bcb', down: 'bbb', left: 'bcb' }, 2);
     }
 }
 class Tile {
     static Tiles = [];
     image;
     connections;
-    constructor(image, connections, rotations = 'NONE') {
+    constructor(image, connections, rotations = 0) {
         this.image = image;
         this.connections = connections;
         Tile.Tiles.push(this);
-        switch (rotations) {
-            case 'FLIP':
-                this.rotate(1);
-                break;
-            case 'TWO':
-                this.rotate(2);
-                break;
-            case 'FOUR':
-                this.rotate(1);
-                this.rotate(2);
-                this.rotate(3);
-                break;
+        if (rotations === 0)
+            return;
+        if (rotations === 2) {
+            this.rotate(1);
+            return;
+        }
+        if (rotations === 4) {
+            this.rotate(1);
+            this.rotate(2);
+            this.rotate(3);
+            return;
         }
     }
     rotate(count) {

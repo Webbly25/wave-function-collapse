@@ -117,7 +117,9 @@ class Grid {
 				if (!neighbour) return;
 
 				// get all the possible connections the neighbour can have
-				const connections = neighbour.options.map(tile => tile.connections[this.oppositeDirection(direction)]);
+				const connections = neighbour.options
+					.map(tile => tile.connections[this.oppositeDirection(direction)])
+					.map(connection => connection.split('').reverse().join(''));
 				// filter the options to keep only the ones that have a connection with the neighbour
 				options = options.filter(tile => connections.includes(tile.connections[direction]));
 			};

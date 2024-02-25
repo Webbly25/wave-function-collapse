@@ -19,7 +19,7 @@ function setup() {
 }
 
 function draw() {
-	background(51);
+	background(10);
 	grid.draw();
 
 	const cell = grid.pickCell();

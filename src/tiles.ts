@@ -1,6 +1,5 @@
 type Direction = 'up' | 'down' | 'left' | 'right';
 type Connections = Record<Direction, string>;
-type Rotations = 'NONE' | 'FLIP' | 'TWO' | 'FOUR';
 
 class Tile {
 	static Tiles: Tile[] = [];
@@ -15,24 +14,22 @@ class Tile {
 	 * @param connections The connection rules for the tile
 	 * @param rotations How many times the tile should be rotated
 	 */
-	constructor(image: p5.Image | p5.Graphics, connections: Connections, rotations: Rotations = 'NONE') {
+	constructor(image: p5.Image | p5.Graphics, connections: Connections, rotations: 0 | 2 | 4 = 0) {
 		this.image = image;
 		this.connections = connections;
 
 		Tile.Tiles.push(this);
 
-		switch (rotations) {
-			case 'FLIP':
-				this.rotate(1);
-				break;
-			case 'TWO':
-				this.rotate(2);
-				break;
-			case 'FOUR':
-				this.rotate(1);
-				this.rotate(2);
-				this.rotate(3);
-				break;
+		if (rotations === 0) return;
+		if (rotations === 2) {
+			this.rotate(1);
+			return;
+		}
+		if (rotations === 4) {
+			this.rotate(1);
+			this.rotate(2);
+			this.rotate(3);
+			return;
 		}
 	}
 
