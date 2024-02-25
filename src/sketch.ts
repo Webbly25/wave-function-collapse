@@ -1,12 +1,7 @@
 let grid: Grid;
 
 function preload() {
-	// create the tile objects
-	new Tile('tiles/blank.png', { up: 'a', down: 'a', left: 'a', right: 'a' });
-	new Tile('tiles/up.png', { up: 'b', down: 'a', left: 'b', right: 'b' });
-	new Tile('tiles/right.png', { up: 'b', down: 'b', left: 'a', right: 'b' });
-	new Tile('tiles/down.png', { up: 'a', down: 'b', left: 'b', right: 'b' });
-	new Tile('tiles/left.png', { up: 'b', down: 'b', left: 'b', right: 'a' });
+	simpleTileSet();
 }
 
 function setup() {

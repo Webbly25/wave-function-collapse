@@ -148,11 +148,7 @@ class Grid {
 }
 let grid;
 function preload() {
-    new Tile('tiles/blank.png', { up: 'a', down: 'a', left: 'a', right: 'a' });
-    new Tile('tiles/up.png', { up: 'b', down: 'a', left: 'b', right: 'b' });
-    new Tile('tiles/right.png', { up: 'b', down: 'b', left: 'a', right: 'b' });
-    new Tile('tiles/down.png', { up: 'a', down: 'b', left: 'b', right: 'b' });
-    new Tile('tiles/left.png', { up: 'b', down: 'b', left: 'b', right: 'a' });
+    simpleTileSet();
 }
 function setup() {
     console.log('🚀 - Setup initialized - P5 is running');
@@ -171,6 +167,14 @@ function draw() {
     else {
         noLoop();
     }
+}
+function simpleTileSet() {
+    const dir = 'tiles/simple/';
+    new Tile(dir + 'blank.png', { up: 'a', down: 'a', left: 'a', right: 'a' });
+    new Tile(dir + 'up.png', { up: 'b', down: 'a', left: 'b', right: 'b' });
+    new Tile(dir + 'right.png', { up: 'b', down: 'b', left: 'a', right: 'b' });
+    new Tile(dir + 'down.png', { up: 'a', down: 'b', left: 'b', right: 'b' });
+    new Tile(dir + 'left.png', { up: 'b', down: 'b', left: 'b', right: 'a' });
 }
 class Tile {
     static Tiles = [];
