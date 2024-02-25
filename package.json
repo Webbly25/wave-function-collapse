@@ -1,0 +1,18 @@
+{
+	"name": "p5-template",
+	"version": "1.0.0",
+	"description": "",
+	"scripts": {
+		"start": "run-p start-compile start-server",
+		"start-compile": "tsc --watch",
+		"start-server": "live-server --watch=build"
+	},
+	"author": "",
+	"license": "ISC",
+	"devDependencies": {
+		"@types/p5": "^1.7.6",
+		"live-server": "^1.2.2",
+		"npm-run-all": "^4.1.5",
+		"typescript": "^5.3.3"
+	}
+}
