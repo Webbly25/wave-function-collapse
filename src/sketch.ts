@@ -6,6 +6,8 @@ function preload() {
 }
 
 function setup() {
+	frameRate(1);
+
 	console.log('🚀 - Setup initialized - P5 is running');
 	createCanvas(400, 400);
 	grid = Grid.getInstance();
@@ -15,5 +17,12 @@ function setup() {
 function draw() {
 	background(51);
 
+	const tile = grid.pickTile();
+	if (tile) {
+		tile.collapse();
+	}
+
 	grid.draw();
+
+	noLoop();
 }
