@@ -1,7 +1,11 @@
 let grid: Grid;
+let img: p5.Image;
+let tileset: { preload: () => void; setup: () => void };
 
 function preload() {
-	simpleTileSet();
+	tileset = SimpleTileSet;
+
+	tileset.preload();
 }
 
 function setup() {
@@ -9,6 +13,8 @@ function setup() {
 	createCanvas(400, 400);
 	grid = Grid.getInstance();
 	grid.setCanvasSize(width, height);
+
+	tileset.setup();
 }
 
 function draw() {

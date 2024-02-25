@@ -117,9 +117,9 @@ class Grid {
 				if (!neighbour) return;
 
 				// get all the possible connections the neighbour can have
-				const connections = neighbour.options.map(tile => tile.connection[this.oppositeDirection(direction)]);
+				const connections = neighbour.options.map(tile => tile.connections[this.oppositeDirection(direction)]);
 				// filter the options to keep only the ones that have a connection with the neighbour
-				options = options.filter(tile => connections.includes(tile.connection[direction]));
+				options = options.filter(tile => connections.includes(tile.connections[direction]));
 			};
 
 			checkConnections('up');
@@ -129,7 +129,7 @@ class Grid {
 
 			// if there are no options left, the grid is invalid
 			if (options.length === 0) {
-				if (confirm('No more options left, the grid is invalid. Do you want to restart?')) {
+				if (false && confirm('No more options left, the grid is invalid. Do you want to restart?')) {
 					this.reset();
 				} else {
 					cell.highlight(this.cellWidth, this.cellHeight);

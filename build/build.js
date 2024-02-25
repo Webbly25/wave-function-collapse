@@ -100,15 +100,15 @@ class Grid {
                 const neighbour = this.getNeighbour(cell, direction);
                 if (!neighbour)
                     return;
-                const connections = neighbour.options.map(tile => tile.connection[this.oppositeDirection(direction)]);
-                options = options.filter(tile => connections.includes(tile.connection[direction]));
+                const connections = neighbour.options.map(tile => tile.connections[this.oppositeDirection(direction)]);
+                options = options.filter(tile => connections.includes(tile.connections[direction]));
             };
             checkConnections('up');
             checkConnections('down');
             checkConnections('left');
             checkConnections('right');
             if (options.length === 0) {
-                if (confirm('No more options left, the grid is invalid. Do you want to restart?')) {
+                if (false && confirm('No more options left, the grid is invalid. Do you want to restart?')) {
                     this.reset();
                 }
                 else {
@@ -147,14 +147,18 @@ class Grid {
     }
 }
 let grid;
+let img;
+let tileset;
 function preload() {
-    simpleTileSet();
+    tileset = SimpleTileSet;
+    tileset.preload();
 }
 function setup() {
     console.log('🚀 - Setup initialized - P5 is running');
     createCanvas(400, 400);
     grid = Grid.getInstance();
     grid.setCanvasSize(width, height);
+    tileset.setup();
 }
 function draw() {
     background(51);
@@ -168,22 +172,46 @@ function draw() {
         noLoop();
     }
 }
-function simpleTileSet() {
-    const dir = 'tiles/simple/';
-    new Tile(dir + 'blank.png', { up: 'a', down: 'a', left: 'a', right: 'a' });
-    new Tile(dir + 'up.png', { up: 'b', down: 'a', left: 'b', right: 'b' });
-    new Tile(dir + 'right.png', { up: 'b', down: 'b', left: 'a', right: 'b' });
-    new Tile(dir + 'down.png', { up: 'a', down: 'b', left: 'b', right: 'b' });
-    new Tile(dir + 'left.png', { up: 'b', down: 'b', left: 'b', right: 'a' });
+class SimpleTileSet {
+    static tiles;
+    static preload() {
+        const dir = 'tiles/simple/';
+        this.tiles = {
+            blank: loadImage(dir + 'blank.png'),
+            up: loadImage(dir + 'up.png')
+        };
+    }
+    static setup() {
+        new Tile(this.tiles.blank, { up: 'a', right: 'a', down: 'a', left: 'a' }, false);
+        new Tile(this.tiles.up, { up: 'b', right: 'b', down: 'a', left: 'b' });
+    }
 }
 class Tile {
     static Tiles = [];
     image;
-    connection;
-    constructor(imagePath, connection) {
-        this.image = loadImage(imagePath);
-        this.connection = connection;
+    connections;
+    constructor(image, connections, canRotate = true) {
+        this.image = image;
+        this.connections = connections;
         Tile.Tiles.push(this);
+        if (canRotate)
+            this.rotate().rotate().rotate();
+    }
+    rotate() {
+        const width = this.image.width;
+        const height = this.image.height;
+        const newImg = createGraphics(width, height);
+        newImg.imageMode(CENTER);
+        newImg.translate(width / 2, height / 2);
+        newImg.rotate(HALF_PI);
+        newImg.image(this.image, 0, 0);
+        const newConnection = {
+            up: this.connections.left,
+            right: this.connections.up,
+            down: this.connections.right,
+            left: this.connections.down
+        };
+        return new Tile(newImg, newConnection, false);
     }
 }
 //# sourceMappingURL=build.js.map
