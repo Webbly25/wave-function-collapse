@@ -7,7 +7,7 @@
 		"removeComments": true,
 		"rootDir": "./src/",
 		"sourceMap": true,
-		"target": "es5",
+		"target": "ES2022",
 		"moduleResolution": "node",
 		"strict": true
 	}
