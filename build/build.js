@@ -43,6 +43,10 @@ class Grid {
         return Grid.instance;
     }
     constructor() {
+        this.reset();
+    }
+    reset() {
+        this.cells = [];
         for (let row = 0; row < this.dimensions; row++) {
             for (let column = 0; column < this.dimensions; column++) {
                 this.cells.push(new Cell(row, column));
@@ -85,9 +89,12 @@ class Grid {
         return this.cells[column + row * this.dimensions];
     }
     updateOptions() {
-        const nextGrid = this.cells.map(cell => {
-            if (cell.collapsed)
-                return cell;
+        const nextGrid = [];
+        for (const cell of this.cells) {
+            if (cell.collapsed) {
+                nextGrid.push(cell);
+                continue;
+            }
             let options = Tile.allTiles();
             const checkConnections = (direction) => {
                 const neighbour = this.getNeighbour(cell, direction);
@@ -101,11 +108,17 @@ class Grid {
             checkConnections('left');
             checkConnections('right');
             if (options.length === 0) {
-                cell.highlight(this.cellWidth, this.cellHeight);
-                noLoop();
+                if (confirm('No more options left, the grid is invalid. Do you want to restart?')) {
+                    this.reset();
+                }
+                else {
+                    cell.highlight(this.cellWidth, this.cellHeight);
+                    noLoop();
+                }
+                return;
             }
-            return new Cell(cell.row, cell.column, options);
-        });
+            nextGrid.push(new Cell(cell.row, cell.column, options));
+        }
         this.cells = nextGrid;
     }
     getNeighbour(cell, direction) {

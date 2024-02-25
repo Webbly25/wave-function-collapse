@@ -15,6 +15,15 @@ class Grid {
 	}
 
 	private constructor() {
+		this.reset();
+	}
+
+	/**
+	 * Reset the grid
+	 */
+	private reset(): void {
+		this.cells = [];
+
 		// create all the cells
 		for (let row = 0; row < this.dimensions; row++) {
 			for (let column = 0; column < this.dimensions; column++) {
@@ -91,9 +100,14 @@ class Grid {
 	 * Update the options available to each cell
 	 */
 	updateOptions(): void {
-		const nextGrid: Cell[] = this.cells.map(cell => {
+		const nextGrid: Cell[] = [];
+
+		for (const cell of this.cells) {
 			// keep the collapsed cell as is
-			if (cell.collapsed) return cell;
+			if (cell.collapsed) {
+				nextGrid.push(cell);
+				continue;
+			}
 
 			let options = Tile.allTiles();
 
@@ -115,12 +129,18 @@ class Grid {
 
 			// if there are no options left, the grid is invalid
 			if (options.length === 0) {
-				cell.highlight(this.cellWidth, this.cellHeight);
-				noLoop();
+				if (confirm('No more options left, the grid is invalid. Do you want to restart?')) {
+					this.reset();
+				} else {
+					cell.highlight(this.cellWidth, this.cellHeight);
+					noLoop();
+				}
+
+				return;
 			}
 
-			return new Cell(cell.row, cell.column, options);
-		});
+			nextGrid.push(new Cell(cell.row, cell.column, options));
+		}
 
 		this.cells = nextGrid;
 	}
