@@ -113,6 +113,12 @@ class Grid {
 			checkConnections('left');
 			checkConnections('right');
 
+			// if there are no options left, the grid is invalid
+			if (options.length === 0) {
+				cell.highlight(this.cellWidth, this.cellHeight);
+				noLoop();
+			}
+
 			return new Cell(cell.row, cell.column, options);
 		});
 

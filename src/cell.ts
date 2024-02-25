@@ -17,21 +17,27 @@ class Cell {
 	}
 
 	/**
-	 * Draw this cell
-	 * @returns
+	 * Draw the cell
+	 * @param width The width of the cell
+	 * @param height The height of the cell
 	 */
-	draw(width: number, height: number) {
-		if (!this.collapsed) {
-			// draw nothing
-			fill(0);
-			stroke(255);
-			rect(this.column * width, this.row * height, width, height);
-			return;
-		}
+	draw(width: number, height: number): void {
+		if (!this.collapsed) return;
 
 		// when the cell is collapsed, there will be only one option
 		const tile = this.options[0];
 		image(tile.image, this.column * width, this.row * height, width, height);
+	}
+
+	/**
+	 * Highlight the cell
+	 * @param width The width of the cell
+	 * @param height The height of the cell
+	 */
+	highlight(width: number, height: number): void {
+		fill(255, 0, 0);
+		noStroke();
+		rect(this.column * width, this.row * height, width, height);
 	}
 
 	/**

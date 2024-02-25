@@ -17,6 +17,9 @@ function setup() {
 }
 
 function draw() {
+	background(51);
+	grid.draw();
+
 	const cell = grid.pickCell();
 	if (cell) {
 		cell.collapse();
@@ -25,7 +28,4 @@ function draw() {
 		// no more cells to collapse
 		noLoop();
 	}
-
-	background(51);
-	grid.draw();
 }

@@ -15,14 +15,15 @@ class Cell {
         return this.options[0];
     }
     draw(width, height) {
-        if (!this.collapsed) {
-            fill(0);
-            stroke(255);
-            rect(this.column * width, this.row * height, width, height);
+        if (!this.collapsed)
             return;
-        }
         const tile = this.options[0];
         image(tile.image, this.column * width, this.row * height, width, height);
+    }
+    highlight(width, height) {
+        fill(255, 0, 0);
+        noStroke();
+        rect(this.column * width, this.row * height, width, height);
     }
     collapse() {
         this.collapsed = true;
@@ -99,6 +100,10 @@ class Grid {
             checkConnections('down');
             checkConnections('left');
             checkConnections('right');
+            if (options.length === 0) {
+                cell.highlight(this.cellWidth, this.cellHeight);
+                noLoop();
+            }
             return new Cell(cell.row, cell.column, options);
         });
         this.cells = nextGrid;
@@ -143,6 +148,8 @@ function setup() {
     grid.setCanvasSize(width, height);
 }
 function draw() {
+    background(51);
+    grid.draw();
     const cell = grid.pickCell();
     if (cell) {
         cell.collapse();
@@ -151,8 +158,6 @@ function draw() {
     else {
         noLoop();
     }
-    background(51);
-    grid.draw();
 }
 class Tile {
     static Tiles = [];
