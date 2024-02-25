@@ -3,7 +3,8 @@ let img: p5.Image;
 let tileset: { preload: () => void; setup: () => void };
 
 function preload() {
-	tileset = SimpleTileSet;
+	// tileset = SimpleTileSet;
+	tileset = CircuitTileSet;
 
 	tileset.preload();
 }

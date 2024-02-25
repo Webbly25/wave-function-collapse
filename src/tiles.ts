@@ -1,5 +1,6 @@
 type Direction = 'up' | 'down' | 'left' | 'right';
 type Connections = Record<Direction, string>;
+type Rotations = 'NONE' | 'FLIP' | 'TWO' | 'FOUR';
 
 class Tile {
 	static Tiles: Tile[] = [];
@@ -12,39 +13,63 @@ class Tile {
 	 * @param type The type of tile it is
 	 * @param imagePath The path to the image
 	 * @param connections The connection rules for the tile
-	 * @param canRotate Whether the tile can be rotated
+	 * @param rotations How many times the tile should be rotated
 	 */
-	constructor(image: p5.Image | p5.Graphics, connections: Connections, canRotate: boolean = true) {
+	constructor(image: p5.Image | p5.Graphics, connections: Connections, rotations: Rotations = 'NONE') {
 		this.image = image;
 		this.connections = connections;
 
 		Tile.Tiles.push(this);
 
-		if (canRotate) this.rotate().rotate().rotate();
+		switch (rotations) {
+			case 'FLIP':
+				this.rotate(1);
+				break;
+			case 'TWO':
+				this.rotate(2);
+				break;
+			case 'FOUR':
+				this.rotate(1);
+				this.rotate(2);
+				this.rotate(3);
+				break;
+		}
 	}
 
 	/**
 	 * Rotate the tile HALF_PI clockwise
 	 * Then add the rotated tile to the list of tiles
 	 */
-	private rotate(): Tile {
+	private rotate(count: number): Tile {
 		// rotate the image
 		const width = this.image.width;
 		const height = this.image.height;
 		const newImg = createGraphics(width, height);
 		newImg.imageMode(CENTER);
 		newImg.translate(width / 2, height / 2);
-		newImg.rotate(HALF_PI);
+		newImg.rotate(HALF_PI * count);
 		newImg.image(this.image, 0, 0);
 
 		// rotate the connection rules
+		const oldConnections: string[] = [
+			this.connections.up,
+			this.connections.right,
+			this.connections.down,
+			this.connections.left
+		];
 		const newConnection: Connections = {
-			up: this.connections.left,
-			right: this.connections.up,
-			down: this.connections.right,
-			left: this.connections.down
+			up: oldConnections[(0 - count + 4) % 4],
+			right: oldConnections[(1 - count + 4) % 4],
+			down: oldConnections[(2 - count + 4) % 4],
+			left: oldConnections[(3 - count + 4) % 4]
 		};
+		// const newConnection: Connections = {
+		// 	up: this.connections.left,
+		// 	right: this.connections.up,
+		// 	down: this.connections.right,
+		// 	left: this.connections.down
+		// };
 
-		return new Tile(newImg, newConnection, false);
+		return new Tile(newImg, newConnection);
 	}
 }

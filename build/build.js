@@ -150,7 +150,7 @@ let grid;
 let img;
 let tileset;
 function preload() {
-    tileset = SimpleTileSet;
+    tileset = CircuitTileSet;
     tileset.preload();
 }
 function setup() {
@@ -182,36 +182,76 @@ class SimpleTileSet {
         };
     }
     static setup() {
-        new Tile(this.tiles.blank, { up: 'a', right: 'a', down: 'a', left: 'a' }, false);
-        new Tile(this.tiles.up, { up: 'b', right: 'b', down: 'a', left: 'b' });
+        new Tile(this.tiles.blank, { up: 'a', right: 'a', down: 'a', left: 'a' });
+        new Tile(this.tiles.up, { up: 'b', right: 'b', down: 'a', left: 'b' }, 'FOUR');
+    }
+}
+class CircuitTileSet {
+    static tiles = [];
+    static preload() {
+        const dir = 'tiles/circuit/';
+        for (let i = 0; i < 13; i++) {
+            this.tiles.push(loadImage(dir + i + '.png'));
+        }
+    }
+    static setup() {
+        new Tile(this.tiles[0], { up: 'a', right: 'a', down: 'a', left: 'a' });
+        new Tile(this.tiles[1], { up: 'b', right: 'b', down: 'b', left: 'b' });
+        new Tile(this.tiles[2], { up: 'b', right: 'c', down: 'b', left: 'b' }, 'FOUR');
+        new Tile(this.tiles[3], { up: 'b', right: 'd', down: 'b', left: 'd' }, 'FOUR');
+        new Tile(this.tiles[4], { up: 'b', right: 'c', down: 'b', left: 'a' }, 'FOUR');
+        new Tile(this.tiles[6], { up: 'b', right: 'c', down: 'b', left: 'c' }, 'TWO');
+        new Tile(this.tiles[7], { up: 'd', right: 'c', down: 'd', left: 'c' }, 'TWO');
+        new Tile(this.tiles[8], { up: 'd', right: 'b', down: 'c', left: 'b' }, 'FOUR');
+        new Tile(this.tiles[9], { up: 'c', right: 'c', down: 'b', left: 'c' }, 'FOUR');
+        new Tile(this.tiles[10], { up: 'c', right: 'c', down: 'c', left: 'c' }, 'FLIP');
+        new Tile(this.tiles[11], { up: 'c', right: 'c', down: 'b', left: 'b' }, 'FOUR');
+        new Tile(this.tiles[12], { up: 'b', right: 'c', down: 'b', left: 'c' }, 'FOUR');
     }
 }
 class Tile {
     static Tiles = [];
     image;
     connections;
-    constructor(image, connections, canRotate = true) {
+    constructor(image, connections, rotations = 'NONE') {
         this.image = image;
         this.connections = connections;
         Tile.Tiles.push(this);
-        if (canRotate)
-            this.rotate().rotate().rotate();
+        switch (rotations) {
+            case 'FLIP':
+                this.rotate(1);
+                break;
+            case 'TWO':
+                this.rotate(2);
+                break;
+            case 'FOUR':
+                this.rotate(1);
+                this.rotate(2);
+                this.rotate(3);
+                break;
+        }
     }
-    rotate() {
+    rotate(count) {
         const width = this.image.width;
         const height = this.image.height;
         const newImg = createGraphics(width, height);
         newImg.imageMode(CENTER);
         newImg.translate(width / 2, height / 2);
-        newImg.rotate(HALF_PI);
+        newImg.rotate(HALF_PI * count);
         newImg.image(this.image, 0, 0);
+        const oldConnections = [
+            this.connections.up,
+            this.connections.right,
+            this.connections.down,
+            this.connections.left
+        ];
         const newConnection = {
-            up: this.connections.left,
-            right: this.connections.up,
-            down: this.connections.right,
-            left: this.connections.down
+            up: oldConnections[(0 - count + 4) % 4],
+            right: oldConnections[(1 - count + 4) % 4],
+            down: oldConnections[(2 - count + 4) % 4],
+            left: oldConnections[(3 - count + 4) % 4]
         };
-        return new Tile(newImg, newConnection, false);
+        return new Tile(newImg, newConnection);
     }
 }
 //# sourceMappingURL=build.js.map
